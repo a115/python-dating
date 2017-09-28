@@ -1,15 +1,18 @@
 from datetime import date, datetime, time, timedelta
+import calendar
+
 import iso8601
 import pytz
 
+
 class DateTimeRange:
-    def __init__(self, start_datetime=None, end_datetime=None, timezone=None):
+    def __init__(self, start=None, end=None, timezone=None):
         """ Initialise a new DateTimeRange from the given start and end datetime objects. 
         Ensure that the start and end datetimes are timezone-aware (use UTC by default). 
         If timezone is passed, localise start and end datetimes to that zone. """
 
-        self._start_datetime = start_datetime or datetime.min
-        self._end_datetime = end_datetime or datetime.max
+        self._start_datetime = start or datetime.min
+        self._end_datetime = end or datetime.max
         self.timezone = timezone or self._start_datetime.tzinfo or self._end_datetime.tzinfo or pytz.utc
         if self.timezone != self._start_datetime.tzinfo:
             self._start_datetime = self.timezone.localize(self._start_datetime)
@@ -18,8 +21,15 @@ class DateTimeRange:
 
     @classmethod
     def from_strings(cls, start_datetime_str=None, end_datetime_str=None):
-        return cls(start_datetime=iso8601.parse_date(start_datetime_str) if start_datetime_str else None,
-                   end_datetime=iso8601.parse_date(end_datetime_str) if end_datetime_str else None)
+        return cls(start=iso8601.parse_date(start_datetime_str) if start_datetime_str else None,
+                   end=iso8601.parse_date(end_datetime_str) if end_datetime_str else None)
+
+    @classmethod
+    def month_for(cls, a_datetime):
+        month_range = calendar.monthrange(a_datetime.year, a_datetime.month)
+        month_start = datetime.combine(date(a_datetime.year, a_datetime.month, 1), a_datetime.time())
+        month_end = datetime.combine(date(a_datetime.year, a_datetime.month, month_range[1]), a_datetime.time())
+        return cls(start=month_start, end=month_end, timezone=a_datetime.tzinfo)
 
     @property
     def start_datetime(self):
@@ -83,15 +93,15 @@ class DateTimeRange:
 
 class DateRange(DateTimeRange):
 
-    def __init__(self, start_date=None, end_date=None, timezone=None):
-        start_datetime = datetime.combine(start_date or date.min, time.min)
-        end_datetime = datetime.combine(end_date or date.max, time.max)
-        super().__init__(start_datetime=start_datetime, end_datetime=end_datetime, timezone=timezone)
+    def __init__(self, start=None, end=None, timezone=None):
+        start_datetime = datetime.combine(start or date.min, time.min)
+        end_datetime = datetime.combine(end or date.max, time.max)
+        super().__init__(start=start_datetime, end=end_datetime, timezone=timezone)
 
     @classmethod
     def from_strings(cls, start_date_str=None, end_date_str=None):
-        return cls(start_date=iso8601.parse_date(start_date_str).date() if start_date_str else None,
-                   end_date=iso8601.parse_date(end_date_str).date() if end_date_str else None)
+        return cls(start=iso8601.parse_date(start_date_str).date() if start_date_str else None,
+                   end=iso8601.parse_date(end_date_str).date() if end_date_str else None)
 
     def __str__(self):
         return "({} - {})".format(self.start_date, self.end_date)

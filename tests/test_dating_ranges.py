@@ -44,6 +44,11 @@ class TestDateTimeRange(unittest.TestCase):
         self.assertEqual(dtr1.start_datetime, datetime(2017, 1, 12, 14, 25, 10, 0, UTC))
         self.assertEqual(dtr1.end_datetime, datetime(2017, 2, 15, 7, 0, 1, 0, UTC))
 
+    def test_month_for_constructor(self):
+        mdtr = DateTimeRange.month_for(datetime(2017, 2, 14, 15, 30, 0, 0))
+        self.assertEqual(mdtr.start_datetime, datetime(2017, 2, 1, 15, 30, 0, 0, UTC))
+        self.assertEqual(mdtr.end_datetime, datetime(2017, 2, 28, 15, 30, 0, 0, UTC))
+
 
 class TestDateRange(unittest.TestCase):
     def setUp(self):
