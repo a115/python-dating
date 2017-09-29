@@ -18,7 +18,7 @@ except (ImportError, IOError):
 setup(
         name='dating',
         version=VERSION,
-        description='Library for handling date ranges and time periods in a business context',
+        description='Library for handling date ranges and time periods in a business context (based on Arrow)',
         long_description=long_description,
         url='https://github.com/a115/python-dating',
         author='Jordan Dimov',
@@ -32,11 +32,10 @@ setup(
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.6',
             ],
-        keywords='datetime date range ISO8601',
+        keywords='datetime date range ISO8601 arrow',
         packages=['dating',],
         install_requires=[
-            'iso8601>=0.1.12',
-            'pytz>=2017.2',
+            'arrow>=0.10.0',
             ],
         python_requires='>=3'
 )
